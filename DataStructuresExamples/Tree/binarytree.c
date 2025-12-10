@@ -65,6 +65,17 @@ Node *searchNode(Node *pRoot, int value)
     }
 }
 
+Node *findMin(Node *pRoot)
+{
+    Node *pFindMin = pRoot;
+
+    while(pFindMin->pLeft != NULL) {
+        pFindMin = pFindMin->pLeft;
+    }
+    
+    return pFindMin;
+}
+
 Node *deleteNode(Node *pRoot, int value)
 {
     if (pRoot == NULL)
@@ -72,19 +83,25 @@ Node *deleteNode(Node *pRoot, int value)
         return NULL;
     }
 
-    else if (value < pRoot->data)
+    else if (value < pRoot->data) // sol taraf
     {
-        return pRoot->pLeft = deleteNode(pRoot, value);
+        return pRoot->pLeft = deleteNode(pRoot->pLeft, value);
     }
 
-    else if (value > pRoot->data)
+    else if (value > pRoot->data) // sağ tarafı
     {
-        return pRoot->pRight = deleteNode(pRoot, value);
+        return pRoot->pRight = deleteNode(pRoot->pRight, value);
     }
 
     else if (value == pRoot->data)
     {
-        if (pRoot->pLeft == NULL)
+        if (pRoot->pLeft == NULL && pRoot->pRight == NULL)
+        {
+            free(pRoot);
+            return NULL;
+        }
+
+        else if (pRoot->pLeft == NULL)
         {
             Node *pRightTemporary = pRoot->pRight;
             free(pRoot);
@@ -100,9 +117,53 @@ Node *deleteNode(Node *pRoot, int value)
 
         else if (pRoot->pLeft != NULL && pRoot->pRight != NULL)
         {
-            Node
+            Node *pMinRight = findMin(pRoot->pRight);
+            pRoot->data = pMinRight;
+            pMinRight->pRight = deleteNode(pRoot->pRight, pMinRight->data);
+            return pRoot;
         }
     }
+}
+
+void preorder(Node *pRoot) {
+    if (pRoot == NULL)
+    {
+        return;
+    }
+    printf("%d ", pRoot->data);
+    preorder(pRoot->pLeft);
+    preorder(pRoot->pRight);
+}
+
+void inorder(Node *pRoot) {
+    if (pRoot == NULL)
+    {
+        return;
+    }
+    inorder(pRoot->pLeft);
+    printf("%d ",pRoot->data);
+    inorder(pRoot->pRight);    
+}
+
+void postorder(Node *pRoot) {
+    if (pRoot == NULL)
+    {
+        return;
+    }
+    postorder(pRoot->pLeft);
+    postorder(pRoot->pRight);
+    printf("%d ",pRoot->data);
+}
+
+void destroyTree() {
+    if (pRoot == NULL)
+    {
+        return;
+    }
+
+    postorder(pRoot->pLeft);
+    postorder(pRoot->pRight);
+    free(pRoot);
 }
 
 int main()
